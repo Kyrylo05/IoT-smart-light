@@ -13,11 +13,12 @@
 2. **ESP-01 (ESP8266)** - Wi-Fi модуль для підключення Arduino до Інтернету.
 3. **Blynk** - платформа для створення мобільних додатків для керування IoT пристроями.
 4. **Світлодіоди** - вихідні пристрої, які ми будемо керувати.
+5. **Резистори 220 Ом** - для обмеження струму через світлодіоди.
 
 ### Схема підключення
 
 1. Підключіть ESP-01 до Arduino через порти RX і TX.
-2. Підключіть світлодіоди до відповідних цифрових виходів Arduino.
+2. Підключіть світлодіоди до відповідних цифрових виходів Arduino через резистори на 220 Ом.
 3. Підключіть живлення до всіх компонентів.
 
 ## Налаштування середовища
@@ -44,30 +45,56 @@
 ### Код
 
 ```cpp
+#define BLYNK_TEMPLATE_ID "TMPL4T_ONkGz2"
+#define BLYNK_TEMPLATE_NAME "IOT HOME Lights"
+#define BLYNK_AUTH_TOKEN "YOUR_BLYNK_AUTH_TOKEN"
+
 #define BLYNK_PRINT Serial
 
 #include <ESP8266_Lib.h>
 #include <BlynkSimpleShieldEsp8266.h>
+#include <SoftwareSerial.h>
 
-char auth[] = "YOUR_BLYNK_AUTH_TOKEN";
+// Your WiFi credentials.
+// Set password to "" for open networks.
 char ssid[] = "YOUR_WIFI_SSID";
 char pass[] = "YOUR_WIFI_PASSWORD";
 
-#include <SoftwareSerial.h>
 SoftwareSerial EspSerial(2, 3); // RX, TX
 
-#define ESP8266_BAUD 9600
+#define ESP8266_BAUD 38400
 ESP8266 wifi(&EspSerial);
+
+// LED pin definitions
+const int redPin = 8;
+const int yellowPin = 9;
+const int greenPin = 10;
+const int bluePin = 11;
 
 void setup()
 {
-  Serial.begin(9600);
-  delay(10);
+  // Debug console
+  Serial.begin(115200);
+  delay(1000);  // Додатковий час для стабілізації
 
+  Serial.println("Setting up ESP8266...");
+  
+  // Set ESP8266 baud rate
   EspSerial.begin(ESP8266_BAUD);
-  delay(10);
+  delay(1000);  // Додатковий час для стабілізації
 
-  Blynk.begin(auth, wifi, ssid, pass);
+  Serial.println("Initializing Blynk...");
+  
+  // Initialize Blynk
+  Blynk.begin(BLYNK_AUTH_TOKEN, wifi, ssid, pass);
+
+  Serial.println("Blynk initialized");
+
+  // Set LED pins as outputs
+  pinMode(redPin, OUTPUT);
+  pinMode(yellowPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
 }
 
 void loop()
@@ -87,3 +114,7 @@ void loop()
 1. **Arduino Uno**: контролює світлодіоди, отримуючи команди від ESP-01 через послідовний інтерфейс.
 2. **ESP-01**: підключається до Wi-Fi і обробляє команди з Blynk сервера.
 3. **Blynk**: надає інтерфейс для користувача у вигляді мобільного додатка, що дозволяє керувати освітленням через інтернет.
+
+## Висновок
+
+Ця система надає зручний спосіб керування освітленням за допомогою IoT технологій. Завдяки використанню Arduino, ESP8266 та платформи Blynk, можна легко створити систему, яка дозволяє керувати освітленням через Інтернет з будь-якої точки світу.
