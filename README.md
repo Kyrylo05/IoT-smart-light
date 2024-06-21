@@ -1,6 +1,4 @@
-Ось текст для файлу `README.md`, який ви можете скопіювати та використати у своєму проекті на GitHub:
 
-```markdown
 # IoT Lighting Control System with Arduino, ESP8266, and Blynk
 
 ## Опис проекту
